@@ -93,13 +93,13 @@ _KNOWN_WARNING_DEBT = (
 
 
 def _apply_ci_cpu_march():
-    """CI only: compile Warp CPU kernels for a fixed -march so every runner CPU variant shares one kernel cache."""
+    """CI only: compile Warp CPU kernels for a fixed target CPU so every runner CPU variant shares one kernel cache."""
     march = os.environ.get("NEWTON_CI_WARP_CPU_MARCH")
     if march:
         import warp as wp  # noqa: PLC0415
 
         wp.config.cpu_compiler_flags = (wp.config.cpu_compiler_flags or "-march=native").replace(
-            "-march=native", f"-march={march}"
+            "-march=native", f"-target-cpu {march}"
         )
 
 
