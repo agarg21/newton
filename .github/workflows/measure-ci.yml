@@ -37,6 +37,8 @@ jobs:
           version: "0.13.5"
           prune-cache: true
       - name: Test CI tooling
+        # fork-only: these tests read workflow files removed from the measurement fork
+        if: false
         run: uv run --no-project --with packaging==26.2 -m unittest discover -s scripts/ci/tests
       - name: Check deprecation allowlists
         run: uv run --no-project --with packaging==26.2 scripts/ci/check_deprecation_allowlists.py
