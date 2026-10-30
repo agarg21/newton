@@ -92,6 +92,17 @@ _KNOWN_WARNING_DEBT = (
 )
 
 
+def _apply_ci_cpu_march():
+    """CI only: compile Warp CPU kernels for a fixed -march so every runner CPU variant shares one kernel cache."""
+    march = os.environ.get("NEWTON_CI_WARP_CPU_MARCH")
+    if march:
+        import warp as wp  # noqa: PLC0415
+
+        wp.config.cpu_compiler_flags = (wp.config.cpu_compiler_flags or "-march=native").replace(
+            "-march=native", f"-march={march}"
+        )
+
+
 def _read_deprecation_allowlist(path):
     """Read literal deprecation-message prefixes from a line-oriented file."""
     with open(path, encoding="utf-8") as allowlist_file:
@@ -327,6 +338,7 @@ def main(argv=None):
     process_count = min(process_count, args.maxjobs)  # NVIDIA Modification
 
     import warp as wp  # noqa: PLC0415 NVIDIA Modification
+    _apply_ci_cpu_march()
 
     # Honor WARP_CACHE_ROOT so concurrent worktrees do not wipe each other's
     # default cache.  init_kernel_cache appends the version segment.
@@ -843,6 +855,7 @@ def initialize_test_process(lock, shared_index, args, temp_dir):
 
     with _coverage(args, temp_dir):
         import warp as wp  # noqa: PLC0415
+        _apply_ci_cpu_march()
 
         if args.no_shared_cache:
             from warp._src.thirdparty import appdirs  # noqa: PLC0415
