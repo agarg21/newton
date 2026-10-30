@@ -180,6 +180,7 @@ jobs:
           --junit-report-xml rspec.xml
           ${{ env.UPLOAD_TO_CODECOV == 'true' && '--coverage --coverage-xml coverage.xml' || '' }}
       - name: Run ASV harness unit tests
+        if: false  # fork-only: ASV harness self-tests read workflow files removed in the fork
         run: >
           uv run --no-sync -m newton.tests
           --strict-warnings
